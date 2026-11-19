@@ -178,9 +178,6 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .sc-row{font-size:14.5px;line-height:1.6}
 .sc-row b{margin-right:6px}
 .sc-ig{font-size:13px;color:var(--muted);padding-top:10px;border-top:1px solid var(--line)}
-.sharebox{display:grid;gap:10px;max-width:560px}
-.sharebox textarea{width:100%;min-height:170px;padding:12px 14px;font:400 14.5px/1.7 var(--font-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;resize:vertical}
-.sharebox .acts{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .tarot-sec{display:flex;flex-direction:column;gap:14px}
 .sec>h2,.tarot-sec>h2{display:flex;align-items:center;gap:12px}
 .sec>h2::before,.tarot-sec>h2::before{content:"";flex:0 0 14px;height:14px;background:var(--gold);clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%)}
@@ -216,7 +213,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .brace-cta{display:flex;justify-content:flex-end;align-items:center;gap:10px 14px;flex-wrap:wrap}
 .brace-cta #braceStatus{flex:1 1 100%;text-align:right}
 .brace-cta #braceStatus:empty{display:none}
-.brace-cta .btn{height:44px;padding:0 20px;font-size:15px}
+.brace-cta .btn{height:44px;padding:0 18px;font-size:15px;white-space:nowrap}
 .btn.ghost{background:var(--surface);color:var(--accent);border:1px solid var(--gold-2);box-shadow:none}
 .btn.ghost:hover{box-shadow:0 6px 14px color-mix(in srgb,var(--gold-2) 30%,transparent)}
 .brace-img{display:block;width:min(100%,360px);height:auto;margin:6px 0 0 auto;border-radius:10px;border:1px solid var(--line)}
@@ -483,16 +480,10 @@ function render(y,m,d){
     +'<h4>補強缺乏數的水晶</h4><ul class="cry-list">'+cryHtml+'</ul>'
     +'<p class="note">水晶與脈輪的對應是坊間的傳統說法,適合當作選購與日常提醒的靈感,沒有醫療或科學上的效果,也不需要一次買齊。可以先從本命水晶開始,再挑一到兩顆最想補強的缺乏數。</p></section>';
 
-  var linesTxt=found.length?found.map(function(L){return L.n.join('-')+' '+L.name}).join('、'):'無連線';
   var bdTxt=y+' 年 '+m+' 月 '+d+' 日';
-  var tx=['【JS礦室 生命靈數】','出生年月日:'+bdTxt,'生命靈數:'+n+' '+P.name+'('+P.kw.join('、')+')'];
-  tx.push('本命數主要解析:'+P.intro,'優勢:'+P.strengths,'課題:'+P.lessons);
-  if(master)tx.push('大師數:'+master+'/'+MASTER[master].base+' '+MASTER[master].title,'大師數特質:'+MASTER[master].trait,'大師數課題:'+MASTER[master].task);
-  tx.push('九宮格連線:'+linesTxt,'缺乏數:'+missing.join('、'),'本命水晶:'+C.name,'補強水晶:'+missing.map(function(x){return '缺'+x+' '+CRYSTAL[x].name}).join('、'),'更多水晶資訊:'+IG);
-  var shareText=tx.join('\n');
 
   html+='<section class="sec"><h2>分享給朋友</h2>'
-    +'<p class="muted small">下面這張卡片可以直接截圖分享,卡片和文字都會顯示出生年月日。也可以複製文字,貼到 LINE 或 IG 訊息。</p>'
+    +'<p class="muted small">這張卡片可以直接截圖分享。</p>'
     +'<div class="sharecard" id="sharecard"><div class="sc-top"><span class="logo" role="img" aria-label="JS礦室"></span><span class="sc-bt"><span class="brand">JS礦室</span><span class="tagline">Crystal &amp; Mineral Studio</span></span><span class="muted small">生命靈數</span></div>'
     +'<p class="sc-row"><b>出生年月日</b>'+bdTxt+'</p><div class="sc-main">'+gem('var(--gem)',84)+'<div><div class="sc-num">'+n+'</div><div class="sc-name">'+P.name+'</div></div></div>'
     +'<ul class="chips">'+P.kw.map(function(w){return '<li>'+w+'</li>'}).join('')+'</ul>'
@@ -502,24 +493,14 @@ function render(y,m,d){
     +'<p class="sc-row"><b>本命水晶</b>'+C.name+'</p>'
     +'<p class="sc-row"><b>補強水晶</b>'+missing.map(function(x){return '缺'+x+' '+CRYSTAL[x].name}).join('、')+'</p>'
     +'<p class="sc-row"><b>連線</b>'+(found.length?found.map(function(L){return L.name}).join('、'):'無連線')+'</p>'
-    +'<p class="sc-ig">Instagram @js_studio_261031</p></div>'
-    +'<div class="sharebox"><label for="shareText" class="small muted">分享文字</label><textarea id="shareText" readonly></textarea>'
-    +'<div class="acts"><button type="button" class="btn" id="copyBtn">複製文字</button><span id="copyStatus" class="small muted" aria-live="polite"></span></div></div></section>';
+    +'<p class="sc-ig">Instagram @js_studio_261031</p></div></section>';
 
   var res=$('#result');
   res.style.setProperty('--gem','var(--g'+n+')');
   res.innerHTML=html;
   res.hidden=false;
-  $('#shareText').value=shareText;
   try{res.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){}
 }
-
-$('#result').addEventListener('click',function(e){
-  if(!e.target.closest('#copyBtn'))return;
-  var ta=$('#shareText'),st=$('#copyStatus');
-  function fallback(){ta.focus();ta.select();st.textContent='已選取文字,請長按或按 Ctrl+C / ⌘C 複製。'}
-  try{navigator.clipboard.writeText(ta.value).then(function(){st.textContent='已複製,可以貼給朋友了。'},fallback)}catch(err){fallback()}
-});
 
 var now=new Date();
 var today=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
@@ -551,7 +532,6 @@ $('#go').addEventListener('click',run);
 'use strict';
 var KEY='tarot-daily-v1';
 var IG='https://www.instagram.com/js_studio_261031';
-var IG_DM='https://ig.me/m/js_studio_261031';
 var ROMAN=['0','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
 var CR={1:['紅石榴石','海底輪','點燃行動力與自信,幫助你勇敢踏出第一步。'],2:['月光石','臍輪','安撫情緒、增進人際和諧,讓溝通更柔軟。'],3:['黃水晶','太陽神經叢輪','激發靈感與表達力,帶來樂觀與好人緣。'],4:['黑曜石','海底輪','穩定情緒、建立界線,幫助你腳踏實地。'],5:['海藍寶','喉輪','讓溝通流動,增加彈性與面對改變的勇氣。'],6:['粉晶','心輪','滋養愛與關係,營造家庭與人際的溫柔氛圍。'],7:['紫水晶','眉心輪','安定思緒、提升專注與直覺,適合冥想與讀書時陪伴。'],8:['綠幽靈','心輪及太陽神經叢輪','象徵豐盛與秩序,幫助你整理財務、維持企圖心。'],9:['白水晶','頂輪','淨化與釋放,協助你放下執著、保持開闊的心。']};
 var CARDS=[
@@ -695,7 +675,7 @@ function bracelet(idx,cname,cnum,rev){
   return '<div class="brace"><p class="muted small">今日幸運手串</p><div class="brace-row">'+svg
     +'<div class="brace-txt"><p><b>主石</b>'+dot('var(--g'+cnum+')')+cname+'</p>'
     +'<p><b>配色珠</b>'+O.map(function(o){return dot(o[1])+'<span class="cn">'+o[0]+'</span>'+beadName(o[0],cname)}).join('<br><span class="sp"></span>')+'</p></div></div>'
-    +'<div class="brace-cta"><span id="braceStatus" class="small muted" aria-live="polite"></span><button type="button" class="btn ghost" id="braceImg">複製手串圖片</button><a class="btn" href="'+IG_DM+'" target="_blank" rel="noopener noreferrer">想搭配你的專屬手串 請私訊我們</a></div><div id="braceImgOut"></div></div>';
+    +'<div class="brace-cta"><span id="braceStatus" class="small muted" aria-live="polite"></span><button type="button" class="btn ghost" id="braceImg">複製手串圖片</button><a class="btn" href="'+IG+'" target="_blank" rel="noopener noreferrer">想搭配專屬手串 請私訊我們</a></div><div id="braceImgOut"></div></div>';
 }
 function cssVar(n){try{return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}catch(e){return ''}}
 function drawBrace(){
