@@ -656,10 +656,6 @@ function result(idx,rev,fresh){
   var c=CARDS[idx],t=rev?c[4]:c[3],cr=CR[c[2]];
   var kws=t[0].split('、').map(function(w){return '<li>'+w+'</li>'}).join('');
   var pos=rev?'逆位':'正位';
-  var txt=['【JS礦室 每日塔羅】',dateText(),
-    '今日牌:'+c[0]+' '+c[1]+'('+pos+')','關鍵字:'+t[0],
-    '今日總運:'+t[1],'愛情:'+t[2],'工作:'+t[3],'財運:'+t[4],'今日行動:'+t[5],
-    '幸運水晶:'+cr[0]+'(對應'+cr[1]+')','今日幸運穿搭色:'+OUTFIT[idx].map(function(o,k){return ROLES[k]+o[0]}).join('、'),'更多水晶資訊:'+IG].join('\n');
   area.style.setProperty('--gem','var(--g'+c[2]+')');
   area.innerHTML=
     '<div class="tres"><div class="tcard-wrap'+(fresh?' flip':'')+'"><div class="tcard'+(rev?' rev':'')+'">'
@@ -671,10 +667,7 @@ function result(idx,rev,fresh){
     +'<dl class="facts"><div><dt>愛情</dt><dd>'+t[2]+'</dd></div><div><dt>工作</dt><dd>'+t[3]+'</dd></div><div><dt>財運</dt><dd>'+t[4]+'</dd></div><div><dt>行動</dt><dd>'+t[5]+'</dd></div></dl>'
     +'<div class="cry-box">'+gem('var(--g'+c[2]+')',48)+'<div><p class="muted small">今日幸運水晶</p><h3>'+cr[0]+'</h3><p class="small">對應'+cr[1]+'</p></div></div>'
     +'<div class="outfit-box"><p class="muted small">今日幸運穿搭色</p><div class="outfit">'+OUTFIT[idx].map(function(o,k){return '<div class="sw"><i style="background:'+o[1]+'"></i><b>'+o[0]+'</b><span class="muted small">'+ROLES[k]+'</span></div>'}).join('')+'</div></div>'
-    +'<p class="note">今天的牌已經抽好了,明天再來抽新的一張。</p>'
-    +'<div class="sharebox"><label for="tarotText" class="small muted">分享文字</label><textarea id="tarotText" readonly></textarea>'
-    +'<div class="acts"><button type="button" class="btn" id="tarotCopy">複製今日塔羅</button><span id="tarotStatus" class="small muted" aria-live="polite"></span></div></div>';
-  document.querySelector('#tarotText').value=txt;
+    +'<p class="note">今天的牌已經抽好了,明天再來抽新的一張。</p>';
 }
 
 area.addEventListener('click',function(e){
@@ -682,11 +675,6 @@ area.addEventListener('click',function(e){
   if(b){
     var o={date:todayKey(),idx:rnd(CARDS.length),rev:rnd(100)<35};
     save(o);result(o.idx,o.rev,true);return;
-  }
-  if(e.target.closest&&e.target.closest('#tarotCopy')){
-    var ta=document.querySelector('#tarotText'),st=document.querySelector('#tarotStatus');
-    var fb=function(){ta.focus();ta.select();st.textContent='已選取文字,請長按或按 Ctrl+C / ⌘C 複製。'};
-    try{navigator.clipboard.writeText(ta.value).then(function(){st.textContent='已複製,可以貼給朋友了。'},fb)}catch(err){fb()}
   }
 });
 
