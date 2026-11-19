@@ -213,6 +213,13 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .sw b{font-size:15px}
 .brace{display:grid;gap:10px;padding:14px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
 .brace-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.brace-cta{display:flex;justify-content:flex-end;align-items:center;gap:10px 14px;flex-wrap:wrap}
+.brace-cta #braceStatus{flex:1 1 100%;text-align:right}
+.brace-cta #braceStatus:empty{display:none}
+.brace-cta .btn{height:44px;padding:0 20px;font-size:15px}
+.btn.ghost{background:var(--surface);color:var(--accent);border:1px solid var(--gold-2);box-shadow:none}
+.btn.ghost:hover{box-shadow:0 6px 14px color-mix(in srgb,var(--gold-2) 30%,transparent)}
+.brace-img{display:block;width:min(100%,360px);height:auto;margin:6px 0 0 auto;border-radius:10px;border:1px solid var(--line)}
 .brace-svg{flex:0 0 auto;width:min(100%,240px);height:auto;aspect-ratio:1/1}
 .brace-txt{flex:1 1 220px;min-width:0;display:grid;gap:8px;font-size:15px}
 .brace-txt b{margin-right:8px}
@@ -544,6 +551,7 @@ $('#go').addEventListener('click',run);
 'use strict';
 var KEY='tarot-daily-v1';
 var IG='https://www.instagram.com/js_studio_261031';
+var IG_DM='https://ig.me/m/js_studio_261031';
 var ROMAN=['0','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
 var CR={1:['紅石榴石','海底輪','點燃行動力與自信,幫助你勇敢踏出第一步。'],2:['月光石','臍輪','安撫情緒、增進人際和諧,讓溝通更柔軟。'],3:['黃水晶','太陽神經叢輪','激發靈感與表達力,帶來樂觀與好人緣。'],4:['黑曜石','海底輪','穩定情緒、建立界線,幫助你腳踏實地。'],5:['海藍寶','喉輪','讓溝通流動,增加彈性與面對改變的勇氣。'],6:['粉晶','心輪','滋養愛與關係,營造家庭與人際的溫柔氛圍。'],7:['紫水晶','眉心輪','安定思緒、提升專注與直覺,適合冥想與讀書時陪伴。'],8:['綠幽靈','心輪及太陽神經叢輪','象徵豐盛與秩序,幫助你整理財務、維持企圖心。'],9:['白水晶','頂輪','淨化與釋放,協助你放下執著、保持開闊的心。']};
 var CARDS=[
@@ -668,7 +676,8 @@ function load(){
 function save(o){try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
 
 function backSvg(){return '<span class="ts t"></span><span class="tlogo" role="img" aria-label="JS礦室"></span><span class="ts b"></span>'}
-function bracelet(idx,cname,cnum){
+var braceState=null;
+function bracelet(idx,cname,cnum,rev){
   var O=OUTFIT[idx],N=18,R=88,cx=120,cy=120;
   var seq=[-1,0,-1,1,-1,2];
   var svg='<svg class="brace-svg" viewBox="0 0 240 240" role="img" aria-label="今日幸運手串:主石'+cname+',搭配'+O.map(function(o){return o[0]+beadName(o[0],cname)}).join('、')+'">'
@@ -681,10 +690,77 @@ function bracelet(idx,cname,cnum){
     svg+='<g class="bead" style="--i:'+k+'"><circle cx="'+x+'" cy="'+y+'" r="'+r+'" style="fill:'+fill+'" stroke="rgba(60,40,20,.28)" stroke-width="1"/><circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="url(#bshine)"/></g>';
   }
   svg+='<text class="bt" x="120" y="114" text-anchor="middle">今日手串</text><text class="bt2" x="120" y="136" text-anchor="middle">'+cname+'</text></svg>';
+  braceState={idx:idx,cname:cname,cnum:cnum,rev:rev};
   var dot=function(c){return '<i class="dot" style="background:'+c+'"></i>'};
   return '<div class="brace"><p class="muted small">今日幸運手串</p><div class="brace-row">'+svg
     +'<div class="brace-txt"><p><b>主石</b>'+dot('var(--g'+cnum+')')+cname+'</p>'
-    +'<p><b>配色珠</b>'+O.map(function(o){return dot(o[1])+'<span class="cn">'+o[0]+'</span>'+beadName(o[0],cname)}).join('<br><span class="sp"></span>')+'</p></div></div></div>';
+    +'<p><b>配色珠</b>'+O.map(function(o){return dot(o[1])+'<span class="cn">'+o[0]+'</span>'+beadName(o[0],cname)}).join('<br><span class="sp"></span>')+'</p></div></div>'
+    +'<div class="brace-cta"><span id="braceStatus" class="small muted" aria-live="polite"></span><button type="button" class="btn ghost" id="braceImg">複製手串圖片</button><a class="btn" href="'+IG_DM+'" target="_blank" rel="noopener noreferrer">想搭配你的專屬手串 請私訊我們</a></div><div id="braceImgOut"></div></div>';
+}
+function cssVar(n){try{return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}catch(e){return ''}}
+function drawBrace(){
+  var f=function(){try{return Promise.all([document.fonts.load('900 36px "Noto Serif TC"'),document.fonts.load('600 26px "Noto Serif TC"')])}catch(e){return Promise.resolve()}};
+  return f().catch(function(){}).then(function(){
+    var B=braceState,O=OUTFIT[B.idx],W=720,H=1052,cx=360,cy=492,R=222;
+    var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+    var g=cv.getContext('2d');
+    var serif='"Noto Serif TC","Songti TC","PMingLiU",serif';
+    var gold=cssVar('--gold-2')||'#d2a762',ink=cssVar('--ink')||'#3b2f24',muted=cssVar('--muted')||'#6f5f4e';
+    g.fillStyle=cssVar('--surface')||'#fcfaf6';g.fillRect(0,0,W,H);
+    g.strokeStyle=gold;g.lineWidth=3;g.strokeRect(14,14,W-28,H-28);
+    g.lineWidth=1;g.strokeRect(24,24,W-48,H-48);
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillStyle=ink;g.font='900 40px '+serif;g.fillText('JS礦室',cx,84);
+    g.fillStyle=muted;g.font='600 16px Georgia,serif';
+    try{g.letterSpacing='5px'}catch(e){}
+    g.fillText('CRYSTAL & MINERAL STUDIO',cx,122);
+    try{g.letterSpacing='0px'}catch(e){}
+    g.fillStyle=ink;g.font='600 28px '+serif;g.fillText('今日幸運手串',cx,170);
+    g.fillStyle=muted;g.font='400 20px sans-serif';g.fillText(dateText()+'・'+CARDS[B.idx][0]+(B.rev?'(逆位)':'(正位)'),cx,203);
+    g.strokeStyle=gold;g.lineWidth=2;g.beginPath();g.arc(cx,cy,R,0,Math.PI*2);g.stroke();
+    var N=18,seq=[-1,0,-1,1,-1,2],main=cssVar('--g'+B.cnum)||'#999';
+    for(var k=0;k<N;k++){
+      var a=-Math.PI/2+k*2*Math.PI/N,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a),t=seq[k%6],r=t<0?42:29;
+      g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fillStyle=t<0?main:O[t][1];g.fill();
+      var gr=g.createRadialGradient(x-r*.3,y-r*.35,0,x,y,r);
+      gr.addColorStop(0,'rgba(255,255,255,.75)');gr.addColorStop(.5,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(0,0,0,.26)');
+      g.fillStyle=gr;g.fill();
+      g.strokeStyle='rgba(60,40,20,.28)';g.lineWidth=1.5;g.stroke();
+    }
+    g.fillStyle=muted;g.font='600 24px '+serif;g.fillText('今日手串',cx,cy-22);
+    g.fillStyle=ink;g.font='900 38px '+serif;g.fillText(B.cname,cx,cy+22);
+    var row=function(y,label,color,txt){
+      g.textAlign='left';
+      if(label){g.fillStyle=ink;g.font='700 26px sans-serif';g.fillText(label,110,y)}
+      g.beginPath();g.arc(278,y,13,0,Math.PI*2);g.fillStyle=color;g.fill();
+      g.strokeStyle='rgba(60,40,20,.3)';g.lineWidth=1.5;g.stroke();
+      g.fillStyle=ink;g.font='500 28px sans-serif';g.fillText(txt,306,y);
+    };
+    row(806,'主石',main,B.cname);
+    O.forEach(function(o,k){row(858+k*50,k===0?'配色珠':'',o[1],o[0]+'  '+beadName(o[0],B.cname))});
+    g.textAlign='center';g.fillStyle=muted;g.font='400 20px sans-serif';
+    g.fillText('Instagram @js_studio_261031',cx,1012);
+    return cv;
+  });
+}
+function braceBlob(){
+  return drawBrace().then(function(cv){return new Promise(function(res,rej){cv.toBlob(function(b){b?res(b):rej(new Error('blob'))},'image/png')})});
+}
+function copyBraceImage(){
+  var st=document.querySelector('#braceStatus'),out=document.querySelector('#braceImgOut');
+  if(!braceState)return;
+  var say=function(t){if(st)st.textContent=t};
+  var showImg=function(){
+    drawBrace().then(function(cv){
+      if(out)out.innerHTML='<img class="brace-img" alt="今日幸運手串圖片" src="'+cv.toDataURL('image/png')+'">';
+      say('這個瀏覽器沒辦法自動複製圖片,請長按下方圖片,選擇儲存或拷貝。');
+    });
+  };
+  if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){
+    try{
+      navigator.clipboard.write([new ClipboardItem({'image/png':braceBlob()})]).then(function(){say('已複製手串圖片,到私訊貼上送出即可。');if(out)out.innerHTML=''},showImg);
+    }catch(err){showImg()}
+  }else showImg();
 }
 function deck(){
   var h='<p class="muted small" style="text-align:center">深呼吸,心裡想著今天的自己,選一張牌。</p><div class="tdeck">';
@@ -709,11 +785,12 @@ function result(idx,rev,fresh){
     +'<dl class="facts"><div><dt>愛情</dt><dd>'+t[2]+'</dd></div><div><dt>工作</dt><dd>'+t[3]+'</dd></div><div><dt>財運</dt><dd>'+t[4]+'</dd></div><div><dt>行動</dt><dd>'+t[5]+'</dd></div></dl>'
     +'<div class="cry-box">'+gem('var(--g'+c[2]+')',48)+'<div><p class="muted small">今日幸運水晶</p><h3>'+cr[0]+'</h3><p class="small">對應'+cr[1]+'</p><p class="small">功效:'+cr[2]+'</p></div></div>'
     +'<div class="outfit-box"><p class="muted small">今日幸運穿搭色</p><div class="outfit">'+OUTFIT[idx].map(function(o,k){return '<div class="sw"><i style="background:'+o[1]+'"></i><b>'+o[0]+'</b><span class="muted small">'+ROLES[k]+'</span></div>'}).join('')+'</div></div>'
-    +bracelet(idx,cr[0],c[2])
+    +bracelet(idx,cr[0],c[2],rev)
     +'<p class="note">今天的牌已經抽好了,明天再來抽新的一張。</p>';
 }
 
 area.addEventListener('click',function(e){
+  if(e.target.closest&&e.target.closest('#braceImg')){copyBraceImage();return;}
   var b=e.target.closest&&e.target.closest('.tback');
   if(b){
     var o={date:todayKey(),idx:rnd(CARDS.length),rev:rnd(100)<35};
