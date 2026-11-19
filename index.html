@@ -211,6 +211,18 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .sw{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:72px;text-align:center}
 .sw i{display:block;width:56px;height:56px;border-radius:50%;border:2px solid var(--line)}
 .sw b{font-size:15px}
+.brace{display:grid;gap:10px;padding:14px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
+.brace-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.brace-svg{flex:0 0 auto;width:min(100%,240px);height:auto;aspect-ratio:1/1}
+.brace-txt{flex:1 1 220px;min-width:0;display:grid;gap:8px;font-size:15px}
+.brace-txt b{margin-right:8px}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:6px;vertical-align:-2px;border:1px solid rgba(60,40,20,.3)}
+.sp{display:inline-block;width:3.2em}
+.cn{margin-right:.7em;color:var(--muted)}
+.bt{font:600 14px var(--font-display);fill:var(--muted);letter-spacing:.1em}
+.bt2{font:900 20px var(--font-display);fill:var(--ink);letter-spacing:.08em}
+.bead{transform-box:fill-box;transform-origin:center;animation:bpop .45s ease both;animation-delay:calc(var(--i)*45ms)}
+@keyframes bpop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
 .tpos{display:inline-block;margin-left:6px;padding:1px 10px;border-radius:999px;font:500 13px/1.6 var(--font-body);vertical-align:middle;background:var(--surface-2)}
 .tpos.r{color:var(--warn)}
 .tpos.u{color:var(--accent)}
@@ -230,7 +242,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 @keyframes tglow{from{box-shadow:0 0 0 0 color-mix(in srgb,var(--gold-2) 70%,transparent)}to{box-shadow:0 0 0 24px transparent}}
 .tcard-wrap.flip .tcard{animation:tglow 1.1s .6s ease-out 1 both}
 .cta>.cta-logo{flex:0 0 64px;width:64px;height:64px;min-width:64px;aspect-ratio:1/1}
-@media (prefers-reduced-motion: reduce){#result>*,#tarotArea>*,.tcard-wrap.flip .tcard{animation:none}.btn,.ig-pill{transition:none}}
+@media (prefers-reduced-motion: reduce){#result>*,#tarotArea>*,.tcard-wrap.flip .tcard,.bead{animation:none}.btn,.ig-pill{transition:none}}
 .foot{font-size:13px;color:var(--muted);max-width:40em}
 </style>
 
@@ -533,7 +545,7 @@ $('#go').addEventListener('click',run);
 var KEY='tarot-daily-v1';
 var IG='https://www.instagram.com/js_studio_261031';
 var ROMAN=['0','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
-var CR={1:['紅石榴石','海底輪'],2:['月光石','臍輪'],3:['黃水晶','太陽神經叢輪'],4:['黑曜石','海底輪'],5:['海藍寶','喉輪'],6:['粉晶','心輪'],7:['紫水晶','眉心輪'],8:['綠幽靈','心輪及太陽神經叢輪'],9:['白水晶','頂輪']};
+var CR={1:['紅石榴石','海底輪','點燃行動力與自信,幫助你勇敢踏出第一步。'],2:['月光石','臍輪','安撫情緒、增進人際和諧,讓溝通更柔軟。'],3:['黃水晶','太陽神經叢輪','激發靈感與表達力,帶來樂觀與好人緣。'],4:['黑曜石','海底輪','穩定情緒、建立界線,幫助你腳踏實地。'],5:['海藍寶','喉輪','讓溝通流動,增加彈性與面對改變的勇氣。'],6:['粉晶','心輪','滋養愛與關係,營造家庭與人際的溫柔氛圍。'],7:['紫水晶','眉心輪','安定思緒、提升專注與直覺,適合冥想與讀書時陪伴。'],8:['綠幽靈','心輪及太陽神經叢輪','象徵豐盛與秩序,幫助你整理財務、維持企圖心。'],9:['白水晶','頂輪','淨化與釋放,協助你放下執著、保持開闊的心。']};
 var CARDS=[
 ['愚者','The Fool',5,
  ['新開始、自由、勇氣','今天適合放下顧慮,嘗試一件新的事。直覺帶你的方向,值得相信。','單身者容易遇到有趣的新朋友;有伴者適合一起嘗試新鮮事。','適合提出新點子、開始新專案,不必等到萬事俱備。','可小額嘗試新機會,避免一次投入太多。','做一件從沒做過的小事。'],
@@ -622,11 +634,23 @@ var OUTFIT=[
 [["白色","#fafafa"],["灰藍","#7d8da1"],["淺金","#e3c987"]],
 [["淺藍","#a9d3ee"],["銀白","#e8ebf0"],["淡紫","#cdbfe8"]],
 [["銀灰","#b3b9c4"],["靛藍","#3a3f8f"],["淡紫","#cdbfe8"]],
-[["向日葵黃","#f5c518"],["橙色","#f08a2c"],["白色","#fafafa"]],
+[["米黃色","#e8d6a0"],["橙色","#f08a2c"],["白色","#fafafa"]],
 [["米白","#f3ede0"],["淺金","#e3c987"],["天藍","#9cc8e8"]],
 [["森林綠","#3f7d5a"],["金色","#d4a72c"],["白色","#fafafa"]]
 ];
 var ROLES=['主色','搭配色','點綴色'];
+var BEAD={
+'天空藍':'海藍寶','奶油黃':'檸檬水晶','米白':'白玉髓','正紅':'紅瑪瑙','金黃':'黃水晶','白色':'白水晶',
+'銀灰藍':'藍月光石','深藍':'青金石','月白':'白月光石','粉紅':'粉晶','嫩綠':'葡萄石','奶油白':'白月光石',
+'深紅':'紅石榴石','黑色':'黑瑪瑙','深金':'虎眼石','駝色':'太陽石','深棕':'茶晶','玫瑰粉':'薔薇輝石',
+'淺藍':'藍玉髓','寶藍':'青金石','銀色':'赤鐵礦','亮黃':'黃螢石','橘色':'太陽石','灰色':'灰瑪瑙',
+'深灰藍':'藍晶石','墨綠':'孔雀石','紫色':'紫水晶','金色':'金髮晶','靛藍':'堇青石','藏青':'青金石',
+'銀灰':'銀曜石','水藍':'藍磷灰石','灰白':'透石膏','深灰':'煙水晶','酒紅':'紅碧璽','淡紫':'紫水晶',
+'天藍':'海藍寶','珍珠白':'珍珠','暗紅':'石榴石','深紫':'紫龍晶','灰藍':'藍紋瑪瑙','淺金':'黃玉',
+'銀白':'白月光石','米黃色':'阿拉善','橙色':'橙月光石','森林綠':'綠東陵'
+};
+var ALT={'天空藍':'藍晶石','粉紅':'草莓晶','白色':'透石膏'};
+function beadName(col,main){var n=BEAD[col]||'';if(n===main&&ALT[col])n=ALT[col];return n}
 var area=document.querySelector('#tarotArea');
 if(!area)return;
 function pad(n){n=String(n);return n.length<2?'0'+n:n}
@@ -644,6 +668,24 @@ function load(){
 function save(o){try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
 
 function backSvg(){return '<span class="ts t"></span><span class="tlogo" role="img" aria-label="JS礦室"></span><span class="ts b"></span>'}
+function bracelet(idx,cname,cnum){
+  var O=OUTFIT[idx],N=18,R=88,cx=120,cy=120;
+  var seq=[-1,0,-1,1,-1,2];
+  var svg='<svg class="brace-svg" viewBox="0 0 240 240" role="img" aria-label="今日幸運手串:主石'+cname+',搭配'+O.map(function(o){return o[0]+beadName(o[0],cname)}).join('、')+'">'
+    +'<defs><radialGradient id="bshine" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".26"/></radialGradient></defs>'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="none" stroke="var(--gold-2)" stroke-width="1.5"/>';
+  for(var k=0;k<N;k++){
+    var a=-Math.PI/2+k*2*Math.PI/N,x=(cx+R*Math.cos(a)).toFixed(1),y=(cy+R*Math.sin(a)).toFixed(1);
+    var t=seq[k%6],r=t<0?16:11;
+    var fill=t<0?'var(--g'+cnum+')':O[t][1];
+    svg+='<g class="bead" style="--i:'+k+'"><circle cx="'+x+'" cy="'+y+'" r="'+r+'" style="fill:'+fill+'" stroke="rgba(60,40,20,.28)" stroke-width="1"/><circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="url(#bshine)"/></g>';
+  }
+  svg+='<text class="bt" x="120" y="114" text-anchor="middle">今日手串</text><text class="bt2" x="120" y="136" text-anchor="middle">'+cname+'</text></svg>';
+  var dot=function(c){return '<i class="dot" style="background:'+c+'"></i>'};
+  return '<div class="brace"><p class="muted small">今日幸運手串</p><div class="brace-row">'+svg
+    +'<div class="brace-txt"><p><b>主石</b>'+dot('var(--g'+cnum+')')+cname+'</p>'
+    +'<p><b>配色珠</b>'+O.map(function(o){return dot(o[1])+'<span class="cn">'+o[0]+'</span>'+beadName(o[0],cname)}).join('<br><span class="sp"></span>')+'</p></div></div></div>';
+}
 function deck(){
   var h='<p class="muted small" style="text-align:center">深呼吸,心裡想著今天的自己,選一張牌。</p><div class="tdeck">';
   for(var i=1;i<=3;i++){
@@ -665,8 +707,9 @@ function result(idx,rev,fresh){
     +'<h3>'+c[0]+' <span class="tpos '+(rev?'r':'u')+'">'+pos+'</span></h3>'
     +'<ul class="chips">'+kws+'</ul><p class="lead">'+t[1]+'</p></div></div>'
     +'<dl class="facts"><div><dt>愛情</dt><dd>'+t[2]+'</dd></div><div><dt>工作</dt><dd>'+t[3]+'</dd></div><div><dt>財運</dt><dd>'+t[4]+'</dd></div><div><dt>行動</dt><dd>'+t[5]+'</dd></div></dl>'
-    +'<div class="cry-box">'+gem('var(--g'+c[2]+')',48)+'<div><p class="muted small">今日幸運水晶</p><h3>'+cr[0]+'</h3><p class="small">對應'+cr[1]+'</p></div></div>'
+    +'<div class="cry-box">'+gem('var(--g'+c[2]+')',48)+'<div><p class="muted small">今日幸運水晶</p><h3>'+cr[0]+'</h3><p class="small">對應'+cr[1]+'</p><p class="small">功效:'+cr[2]+'</p></div></div>'
     +'<div class="outfit-box"><p class="muted small">今日幸運穿搭色</p><div class="outfit">'+OUTFIT[idx].map(function(o,k){return '<div class="sw"><i style="background:'+o[1]+'"></i><b>'+o[0]+'</b><span class="muted small">'+ROLES[k]+'</span></div>'}).join('')+'</div></div>'
+    +bracelet(idx,cr[0],c[2])
     +'<p class="note">今天的牌已經抽好了,明天再來抽新的一張。</p>';
 }
 
