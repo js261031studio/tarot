@@ -414,6 +414,72 @@ function gem(fill,size){
 
 function chain(n){var c=[n];while(n>9){n=String(n).split('').reduce(function(a,d){return a+ +d},0);c.push(n)}return c}
 
+var lpState=null;
+function lpCss(n){try{return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}catch(e){return ''}}
+function lpDraw(){
+  var f=function(){try{return Promise.all([document.fonts.load('900 36px "Noto Serif TC"'),document.fonts.load('600 26px "Noto Serif TC"')])}catch(e){return Promise.resolve()}};
+  return f().catch(function(){}).then(function(){
+    var B=lpState,W=720,H=1052,cx=360,cy=496,R=222;
+    var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+    var g=cv.getContext('2d');
+    var serif='"Noto Serif TC","Songti TC","PMingLiU",serif';
+    var gold=lpCss('--gold-2')||'#d2a762',ink=lpCss('--ink')||'#3b2f24',muted=lpCss('--muted')||'#6f5f4e';
+    g.fillStyle=lpCss('--surface')||'#fcfaf6';g.fillRect(0,0,W,H);
+    g.strokeStyle=gold;g.lineWidth=3;g.strokeRect(14,14,W-28,H-28);
+    g.lineWidth=1;g.strokeRect(24,24,W-48,H-48);
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillStyle=ink;g.font='900 40px '+serif;g.fillText('JS礦室',cx,84);
+    g.fillStyle=muted;g.font='600 16px Georgia,serif';
+    try{g.letterSpacing='5px'}catch(e){}
+    g.fillText('CRYSTAL & MINERAL STUDIO',cx,122);
+    try{g.letterSpacing='0px'}catch(e){}
+    g.fillStyle=ink;g.font='600 28px '+serif;g.fillText('我的專屬手串',cx,170);
+    g.fillStyle=muted;g.font='400 20px sans-serif';g.fillText(B.bd+'・生命靈數 '+B.n,cx,203);
+    g.strokeStyle=gold;g.lineWidth=2;g.beginPath();g.arc(cx,cy,R,0,Math.PI*2);g.stroke();
+    var seq=[B.n,B.acc[0],B.n,B.acc[1],B.n,B.acc[0]];
+    for(var k=0;k<18;k++){
+      var a=-Math.PI/2+k*2*Math.PI/18,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a),t=seq[k%6],r=t===B.n?42:29;
+      g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fillStyle=lpCss('--g'+t)||'#999';g.fill();
+      var gr=g.createRadialGradient(x-r*.3,y-r*.35,0,x,y,r);
+      gr.addColorStop(0,'rgba(255,255,255,.75)');gr.addColorStop(.5,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(0,0,0,.26)');
+      g.fillStyle=gr;g.fill();
+      g.strokeStyle='rgba(60,40,20,.28)';g.lineWidth=1.5;g.stroke();
+    }
+    g.fillStyle=muted;g.font='600 24px '+serif;g.fillText('本命手串',cx,cy-22);
+    g.fillStyle=ink;g.font='900 38px '+serif;g.fillText(CRYSTAL[B.n].name,cx,cy+22);
+    var row=function(y,label,num,txt,tag){
+      g.textAlign='left';
+      if(label){g.fillStyle=ink;g.font='700 26px sans-serif';g.fillText(label,110,y)}
+      g.beginPath();g.arc(258,y,13,0,Math.PI*2);g.fillStyle=lpCss('--g'+num)||'#999';g.fill();
+      g.strokeStyle='rgba(60,40,20,.3)';g.lineWidth=1.5;g.stroke();
+      g.fillStyle=ink;g.font='500 28px sans-serif';g.fillText(txt,286,y);
+      if(tag){var w=g.measureText(txt).width;g.fillStyle=muted;g.font='400 22px sans-serif';g.fillText(tag,286+w+14,y)}
+    };
+    row(808,'主石',B.n,CRYSTAL[B.n].name,'');
+    B.acc.forEach(function(x,k){row(860+k*50,k===0?'配珠':'',x,CRYSTAL[x].name,B.miss[k]?'補缺 '+x:'平衡與淨化')});
+    g.textAlign='center';g.fillStyle=muted;g.font='400 20px sans-serif';
+    g.fillText('想搭配專屬手串,歡迎私訊',cx,972);
+    g.fillText('Instagram @js_studio_261031',cx,1004);
+    return cv;
+  });
+}
+function lpBlob(){return lpDraw().then(function(cv){return new Promise(function(res,rej){cv.toBlob(function(b){b?res(b):rej(new Error('blob'))},'image/png')})})}
+function lpCopy(){
+  var st=$('#lpStatus'),out=$('#lpImgOut');
+  if(!lpState)return;
+  var say=function(t){if(st)st.textContent=t};
+  var showImg=function(){
+    lpDraw().then(function(cv){
+      if(out)out.innerHTML='<img class="brace-img" alt="我的專屬手串圖片" src="'+cv.toDataURL('image/png')+'">';
+      say('這個瀏覽器沒辦法自動複製圖片,請長按下方圖片,選擇儲存或拷貝。');
+    });
+  };
+  if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){
+    try{navigator.clipboard.write([new ClipboardItem({'image/png':lpBlob()})]).then(function(){say('已複製手串圖片,到私訊貼上送出即可。');if(out)out.innerHTML=''},showImg)}catch(err){showImg()}
+  }else showImg();
+}
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('#lpImg'))lpCopy()});
+
 function render(y,m,d){
   var ys=String(y),ms=pad(m),ds=pad(d),all=ys+ms+ds;
   var digs=all.split('').map(Number);
@@ -480,6 +546,31 @@ function render(y,m,d){
     +'<h4>補強缺乏數的水晶</h4><ul class="cry-list">'+cryHtml+'</ul>'
     +'<p class="note">水晶與脈輪的對應是坊間的傳統說法,適合當作選購與日常提醒的靈感,沒有醫療或科學上的效果,也不需要一次買齊。可以先從本命水晶開始,再挑一到兩顆最想補強的缺乏數。</p></section>';
 
+  // ---- 適合的手串 ----
+  var accN=[];
+  missing.forEach(function(x){if(x!==n&&accN.length<2)accN.push(x)});
+  [9,6,3].forEach(function(x){if(x!==n&&accN.indexOf(x)<0&&accN.length<2)accN.push(x)});
+  var accMiss=accN.map(function(x){return missing.indexOf(x)>=0});
+  var bseq=[n,accN[0],n,accN[1],n,accN[0]];
+  var bsv='<svg class="brace-svg" viewBox="0 0 240 240" role="img" aria-label="適合你的手串:主石'+C.name+',搭配'+accN.map(function(x){return CRYSTAL[x].name}).join('、')+'">'
+    +'<defs><radialGradient id="lshine" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".26"/></radialGradient></defs>'
+    +'<circle cx="120" cy="120" r="88" fill="none" stroke="var(--gold-2)" stroke-width="1.5"/>';
+  for(var bk=0;bk<18;bk++){
+    var ba=-Math.PI/2+bk*2*Math.PI/18,bx=(120+88*Math.cos(ba)).toFixed(1),by=(120+88*Math.sin(ba)).toFixed(1);
+    var bn=bseq[bk%6],br=bn===n?16:11;
+    bsv+='<g class="bead" style="--i:'+bk+'"><circle cx="'+bx+'" cy="'+by+'" r="'+br+'" style="fill:var(--g'+bn+')" stroke="rgba(60,40,20,.28)" stroke-width="1"/><circle cx="'+bx+'" cy="'+by+'" r="'+br+'" fill="url(#lshine)"/></g>';
+  }
+  bsv+='<text class="bt" x="120" y="114" text-anchor="middle">本命手串</text><text class="bt2" x="120" y="136" text-anchor="middle">'+C.name+'</text></svg>';
+  lpState={n:n,acc:accN,miss:accMiss,bd:y+' 年 '+m+' 月 '+d+' 日'};
+  var bdot=function(x){return '<i class="dot" style="background:var(--g'+x+')"></i>'};
+  html+='<section class="sec"><h2>適合你的手串</h2>'
+    +'<p class="muted small">以本命水晶為主石,搭配補強缺乏數的水晶,組成專屬於你的配置。</p>'
+    +'<div class="brace"><div class="brace-row">'+bsv
+    +'<div class="brace-txt"><p><b>主石</b>'+bdot(n)+C.name+'<br><span class="muted small">'+(C.note||'')+'</span></p>'
+    +'<p><b>配珠</b>'+accN.map(function(x,i){return bdot(x)+'<span class="cn">'+CRYSTAL[x].name+'</span><span class="muted small">'+(accMiss[i]?'補缺 '+x:'平衡與淨化')+'</span>'}).join('<br><span class="sp"></span>')+'</p></div></div>'
+    +'<div class="brace-cta"><span id="lpStatus" class="small muted" aria-live="polite" style="flex:1 1 100%;text-align:right"></span><button type="button" class="btn ghost" id="lpImg">複製手串圖片</button><a class="btn" href="'+IG+'" target="_blank" rel="noopener noreferrer">想搭配專屬手串 請私訊我們</a></div><div id="lpImgOut"></div></div>'
+    +'<p class="note">手串的配置與尺寸可以依個人喜好與手圍調整,歡迎私訊討論。</p></section>';
+
   var bdTxt=y+' 年 '+m+' 月 '+d+' 日';
 
   html+='<section class="sec"><h2>分享給朋友</h2>'
@@ -492,6 +583,7 @@ function render(y,m,d){
     +'<p class="sc-row"><b>缺乏數</b>'+missing.join('、')+'</p>'
     +'<p class="sc-row"><b>本命水晶</b>'+C.name+'</p>'
     +'<p class="sc-row"><b>補強水晶</b>'+missing.map(function(x){return '缺'+x+' '+CRYSTAL[x].name}).join('、')+'</p>'
+    +'<p class="sc-row"><b>適合手串</b>主石 '+C.name+',搭配 '+accN.map(function(x){return CRYSTAL[x].name}).join('、')+'</p>'
     +'<p class="sc-row"><b>連線</b>'+(found.length?found.map(function(L){return L.name}).join('、'):'無連線')+'</p>'
     +'<p class="sc-ig">Instagram @js_studio_261031</p></div></section>';
 
@@ -765,7 +857,6 @@ function result(idx,rev,fresh){
     +'<dl class="facts"><div><dt>愛情</dt><dd>'+t[2]+'</dd></div><div><dt>工作</dt><dd>'+t[3]+'</dd></div><div><dt>財運</dt><dd>'+t[4]+'</dd></div><div><dt>行動</dt><dd>'+t[5]+'</dd></div></dl>'
     +'<div class="cry-box">'+gem('var(--g'+c[2]+')',48)+'<div><p class="muted small">今日幸運水晶</p><h3>'+cr[0]+'</h3><p class="small">對應'+cr[1]+'</p><p class="small">功效:'+cr[2]+'</p></div></div>'
     +'<div class="outfit-box"><p class="muted small">今日幸運穿搭色</p><div class="outfit">'+OUTFIT[idx].map(function(o,k){return '<div class="sw"><i style="background:'+o[1]+'"></i><b>'+o[0]+'</b><span class="muted small">'+ROLES[k]+'</span></div>'}).join('')+'</div></div>'
-    +bracelet(idx,cr[0],c[2],rev)
     +'<p class="note">今天的牌已經抽好了,明天再來抽新的一張。</p>';
 }
 
